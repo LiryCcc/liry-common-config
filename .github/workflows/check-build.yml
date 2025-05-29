@@ -1,0 +1,115 @@
+# .github/workflows/three-stage-checks.yml
+
+name: Node.js Staged Checks with pnpm
+
+on:
+  push:
+    branches:
+      - main
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # --- Stage 1: Setup and Install Dependencies ---
+  setup-and-install:
+    name: Stage 1 Setup and Install
+    runs-on: ubuntu-latest # 在最新的 Ubuntu 环境上运行
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4 # 检出代码
+
+      - name: Set up Node.js 22 and pnpm 10
+        uses: actions/setup-node@v4 # 设置 Node.js 环境
+        with:
+          node-version: '22' # 指定 Node.js 版本
+          cache: 'pnpm' # 启用 pnpm 缓存
+
+      - uses: pnpm/action-setup@v3
+        with:
+          version: 10
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile # 安装依赖 (使用 --frozen-lockfile 确保 CI 环境的可靠性)
+
+      # 将安装好依赖的整个工作空间打包成 Artifact 上传
+      # 这样后续的并行 jobs 就可以直接下载使用，无需重新安装
+      - name: Upload workspace artifact
+        uses: actions/upload-artifact@v4 # 使用官方 action 上传 Artifact
+        with:
+          name: workspace # Artifact 的名称
+          path: . # 上传当前目录 (包含了 node_modules)
+          # retention-days: 1 # 可选: 设置 artifact 的保留天数，减少存储占用
+
+  # --- Stage 2 (Parallel): Run Lint and Test ---
+  lint:
+    name: Stage 2 Run Lint
+    runs-on: ubuntu-latest
+    # 这个 job 必须在 setup-and-install 成功后运行
+    needs: setup-and-install
+
+    steps:
+      # 下载之前 setup-and-install job 上传的 workspace artifact
+      - name: Download workspace artifact
+        uses: actions/download-artifact@v4 # 使用官方 action 下载 Artifact
+        with:
+          name: workspace
+          path: . # 下载到当前目录，恢复工作空间文件和 node_modules
+
+      # 设置 Node.js 环境 (只需要确保 Node.js 版本匹配安装依赖时的版本)
+      # 不需要重新设置 pnpm 版本或缓存，因为它们在 Artifact 里
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run lint
+        run: pnpm lint # 执行 lint 脚本
+
+  test:
+    name: Stage 2 Run Test
+    runs-on: ubuntu-latest
+    # 这个 job 也必须在 setup-and-install 成功后运行，且会与 lint job 并行
+    needs: setup-and-install
+
+    steps:
+      # 下载 workspace artifact
+      - name: Download workspace artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: workspace
+          path: .
+
+      # 设置 Node.js 环境
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run test
+        run: pnpm test # 执行 test 脚本
+
+  # --- Stage 3: Run Build ---
+  build:
+    name: Stage 3 Run Build
+    runs-on: ubuntu-latest
+    # 这个 job 必须在 Stage 2 的所有 job (lint 和 test) 都成功后运行
+    needs: [lint, test] # 使用数组指定多个依赖 job
+
+    steps:
+      # 下载 workspace artifact
+      - name: Download workspace artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: workspace
+          path: .
+
+      # 设置 Node.js 环境
+      - name: Set up Node.js 22
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+
+      - name: Run build
+        run: pnpm build # 执行 build 脚本
