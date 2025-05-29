@@ -15,6 +15,12 @@
     "types": "./dist/index.d.ts",
     "browser": "./dist/index.umd.js"
   },
+  "files": [
+    "dist",
+    "LICENSE",
+    "README.md",
+    "package.json"
+  ],
   "scripts": {
     "build": "rollup -c",
     "check-code": "eslint .",
