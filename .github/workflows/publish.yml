@@ -2,13 +2,11 @@ name: auto publish npm
 
 on:
   push:
-    branches:
-      - main
     tags:
-      - 'v*'
+      - 'v*' # 触发条件是推送以 'v' 开头的 tag
 
 jobs:
-  setup-and-install:
+  build-and-publish: # 修改 Job 名称以更好地反映其目的
     runs-on: ubuntu-latest
 
     steps:
@@ -18,13 +16,22 @@ jobs:
       - name: Setup pnpm
         uses: pnpm/action-setup@v3
         with:
-          version: 10
+          version: 10 # 保持原有版本
 
       - name: Setup Node
         uses: actions/setup-node@v4
         with:
-          node-version: 22
+          node-version: 22 # 保持原有版本
           cache: pnpm
+          # 配置 npm registry URL
+          registry-url: 'https://registry.npmjs.org/'
+          # 如果你的包是带 scope 的 (e.g., @myorg/mypackage)，但想发布为 public，
+          # registry-url 是必需的。对于无 scope 的 public 包，registry-url 默认就是 npmjs.org
+          # 但显式指定是好习惯。
+        env:
+          # 将 NPM_TOKEN secret 传递给 NODE_AUTH_TOKEN 环境变量
+          # actions/setup-node 会读取这个变量并配置 .npmrc 文件
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile
@@ -37,3 +44,10 @@ jobs:
 
       - name: Run build
         run: pnpm build
+
+      - name: Publish to npm
+        # 发布命令。
+        # --access public 选项确保带 scope 的包也能以 public 方式发布。
+        # 如果你的包没有 scope (e.g., my-package)，这个选项是多余的，但无害。
+        # pnpm publish 会读取 package.json 中的版本号进行发布。
+        run: pnpm publish --access public
