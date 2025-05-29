@@ -10,7 +10,6 @@ on:
 
 jobs:
   setup-and-install:
-    name: Stage 1 Setup and Install
     runs-on: ubuntu-latest
 
     steps:
