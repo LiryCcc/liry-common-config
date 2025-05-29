@@ -37,11 +37,5 @@ jobs:
       - name: Run test
         run: pnpm test
 
-      - name: Download workspace artifact
-        uses: actions/download-artifact@v4
-        with:
-          name: workspace
-          path: .
-
       - name: Run build
         run: pnpm build
