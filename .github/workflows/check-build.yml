@@ -20,15 +20,14 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4 # 检出代码
 
-      - name: Set up Node.js 22 and pnpm 10
+      - name: Set up Node.js 22
         uses: actions/setup-node@v4 # 设置 Node.js 环境
         with:
           node-version: '22' # 指定 Node.js 版本
           cache: 'pnpm' # 启用 pnpm 缓存
 
-      - uses: pnpm/action-setup@v3
-        with:
-          version: 10
+      - name: install pnpm
+        run: npm install -g pnpm
 
       - name: Install dependencies
         run: pnpm install --frozen-lockfile # 安装依赖 (使用 --frozen-lockfile 确保 CI 环境的可靠性)
