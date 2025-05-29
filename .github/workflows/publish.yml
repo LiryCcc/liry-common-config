@@ -50,4 +50,4 @@ jobs:
         # --access public 选项确保带 scope 的包也能以 public 方式发布。
         # 如果你的包没有 scope (e.g., my-package)，这个选项是多余的，但无害。
         # pnpm publish 会读取 package.json 中的版本号进行发布。
-        run: pnpm publish --access public
+        run: pnpm publish --no-git-checks --access public
