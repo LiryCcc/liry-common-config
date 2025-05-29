@@ -1,4 +1,4 @@
-name: Node.js Staged Checks with pnpm
+name: check&build code
 
 on:
   push:
@@ -35,7 +35,9 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: workspace
-          path: .
+          path: |
+            .
+            !node_modules
 
   lint:
     name: Stage 2 Run Lint
@@ -58,6 +60,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run lint
         run: pnpm lint
@@ -83,6 +89,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run test
         run: pnpm test
@@ -108,6 +118,10 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: '22'
+          cache: pnpm
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
       - name: Run build
         run: pnpm build
