@@ -1,0 +1,25 @@
+{
+  "name": "@liry-ccc/common-config",
+  "version": "1.0.0",
+  "author": "Liry <learainccc@outlook.com>",
+  "type": "module",
+  "scripts": {
+    "format": "prettier --write --cache ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.27.0",
+    "@rollup/plugin-commonjs": "^28.0.3",
+    "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-typescript": "^12.1.2",
+    "@types/node": "^22.15.24",
+    "eslint": "^9.27.0",
+    "globals": "^16.2.0",
+    "prettier": "^3.5.3",
+    "prettier-plugin-organize-imports": "^4.1.0",
+    "prettier-plugin-packagejson": "^2.5.14",
+    "rollup": "^4.41.1",
+    "typescript": "^5.8.3",
+    "typescript-eslint": "^8.33.0"
+  },
+  "packageManager": "pnpm@10.11.0"
+}
