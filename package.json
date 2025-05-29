@@ -1,6 +1,11 @@
 {
   "name": "@liry-ccc/common-config",
   "version": "1.0.0",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LiryCcc/liry-common-config.git"
+  },
+  "license": "MIT",
   "author": "Liry <learainccc@outlook.com>",
   "type": "module",
   "exports": {
@@ -34,5 +39,8 @@
     "typescript": "^5.8.3",
     "typescript-eslint": "^8.33.0"
   },
-  "packageManager": "pnpm@10.11.0"
+  "packageManager": "pnpm@10.11.0",
+  "engines": {
+    "node": ">=18.0.0"
+  }
 }
