@@ -9,11 +9,14 @@
   "author": "Liry <learainccc@outlook.com>",
   "type": "module",
   "exports": {
-    "import": "./dist/index.js",
-    "require": "./dist/index.cjs",
-    "node": "./dist/index.cjs",
-    "types": "./dist/index.d.ts",
-    "browser": "./dist/index.umd.js"
+    ".": {
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs",
+      "browser": "./dist/index.umd.js",
+      "system": "./dist/index.system.js",
+      "amd": "./dist/index.amd.js",
+      "types": "./dist/index.d.ts"
+    }
   },
   "files": [
     "dist",
@@ -34,6 +37,7 @@
     "@eslint/js": "^9.27.0",
     "@rollup/plugin-commonjs": "^28.0.3",
     "@rollup/plugin-node-resolve": "^16.0.1",
+    "@rollup/plugin-terser": "^0.4.4",
     "@rollup/plugin-typescript": "^12.1.2",
     "@types/node": "^22.15.24",
     "eslint": "^9.27.0",
