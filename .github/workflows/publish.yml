@@ -52,14 +52,18 @@ jobs:
         # pnpm publish 会读取 package.json 中的版本号进行发布。
         run: pnpm pub
 
-      - name: Setup Pages # 步骤名称
-        uses: actions/configure-pages@v5 # 配置 GitHub Pages 环境
-
-      - name: Upload Pages artifact # 步骤名称
-        uses: actions/upload-pages-artifact@v3 # 上传准备部署到 Pages 的 artifact
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          path: coverage/ # 指定要上传到 Pages 的目录路径
+          path: coverage # next 生成的静态文件目录
 
-      - name: Deploy to GitHub Pages # 步骤名称
-        id: deployment # 为此步骤设置 ID，以便后续引用其输出
-        uses: actions/deploy-pages@v4 # 使用 deploy-pages action 进行部署
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    needs: build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
