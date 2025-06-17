@@ -51,3 +51,36 @@ jobs:
         # 如果你的包没有 scope (e.g., my-package)，这个选项是多余的，但无害。
         # pnpm publish 会读取 package.json 中的版本号进行发布。
         run: pnpm pub
+
+    # 新增 Job：部署覆盖率报告到 GitHub Pages
+  deploy-coverage-pages:
+    name: Deploy Coverage Report to GitHub Pages # Job 名称
+    needs: build-test-publish # 这个 Job 依赖于 build-test-publish Job 的成功
+    runs-on: ubuntu-latest
+
+    permissions:
+      pages: write # 允许写入 Pages 部署
+      id-token: write # 允许使用 OIDC 令牌进行部署认证
+
+    environment:
+      name: github-pages # 指定 Pages 环境
+      url: ${{ steps.deployment.outputs.page_url }} # 获取 Pages 部署 URL
+
+    steps:
+      - name: Download coverage report artifact # 步骤名称
+        uses: actions/download-artifact@v4 # 使用 download-artifact action
+        with:
+          name: coverage-report # 指定要下载的 artifact 名称 (与上传时的名称一致)
+          path: . # 将 artifact 下载到当前 Job 的根目录，即覆盖率报告会出现在 ./coverage/
+
+      - name: Setup Pages # 步骤名称
+        uses: actions/configure-pages@v5 # 配置 GitHub Pages 环境
+
+      - name: Upload Pages artifact # 步骤名称
+        uses: actions/upload-pages-artifact@v3 # 上传准备部署到 Pages 的 artifact
+        with:
+          path: coverage/ # 指定要上传到 Pages 的目录路径
+
+      - name: Deploy to GitHub Pages # 步骤名称
+        id: deployment # 为此步骤设置 ID，以便后续引用其输出
+        uses: actions/deploy-pages@v4 # 使用 deploy-pages action 进行部署
