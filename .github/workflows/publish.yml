@@ -4,6 +4,12 @@ on:
   push:
     tags:
       - 'v*' # 触发条件是推送以 'v' 开头的 tag
+  workflow_dispatch: # 允许手动触发
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
 
 jobs:
   build-and-publish: # 修改 Job 名称以更好地反映其目的
